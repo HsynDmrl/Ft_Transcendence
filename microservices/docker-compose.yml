@@ -1,0 +1,56 @@
+version: '3.8'
+
+networks:
+  ft_transcendence_net:
+    driver: bridge
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - auth-service
+      - user-service
+      - game-service
+      - chat-service
+      - matchmaking-service
+    networks:
+      - ft_transcendence_net
+
+  auth-service:
+    build: ./auth-service
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence_net
+
+  user-service:
+    build: ./user-service
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence_net
+
+  game-service:
+    build: ./game-service
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence_net
+
+  chat-service:
+    build: ./chat-service
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence_net
+
+  matchmaking-service:
+    build: ./matchmaking-service
+    env_file:
+      - .env
+    networks:
+      - ft_transcendence_net
