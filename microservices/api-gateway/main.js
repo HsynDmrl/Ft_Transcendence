@@ -3,22 +3,22 @@ import fastifyHttpProxy from '@fastify/http-proxy';
 import fastifyJwt from '@fastify/jwt';
 import fastifyCors from '@fastify/cors';
 import fastifyRateLimit from '@fastify/rate-limit';
-import fastifyWebsocket from '@fastify/websocket';
+// import fastifyWebsocket from '@fastify/websocket';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = Fastify({
   logger: {
-    level: 'info',
+    level: 'info', 
     transport: {
       target: 'pino-pretty'
     }
   }
 });
 
-// WebSocket desteği
-app.register(fastifyWebsocket);
+// // WebSocket desteği
+// app.register(fastifyWebsocket);
 
 // CORS
 app.register(fastifyCors, {
@@ -78,20 +78,20 @@ registerProxy('/chat', 'http://chat-service:3004');
 registerProxy('/matchmaking', 'http://matchmaking-service:3005');
 
 // WebSocket endpointleri
-app.get('/ws/game', { websocket: true }, (connection /*, req*/) => {
-  connection.socket.on('message', message => {
-    app.log.info(`Received WS game message: ${message}`);
-    // Burada mesajı game-service'e iletecek bir client oluşturabilirsin (ör: WebSocket client)
-    connection.socket.send(`Game echo: ${message}`);
-  });
-});
+// app.get('/ws/game', { websocket: true }, (connection /*, req*/) => {
+//   connection.socket.on('message', message => {
+//     app.log.info(`Received WS game message: ${message}`);
+//     // Burada mesajı game-service'e iletecek bir client oluşturabilirsin (ör: WebSocket client)
+//     connection.socket.send(`Game echo: ${message}`);
+//   });
+// });
 
-app.get('/ws/chat', { websocket: true }, (connection /*, req*/) => {
-  connection.socket.on('message', message => {
-    app.log.info(`Received WS chat message: ${message}`);
-    connection.socket.send(`Chat echo: ${message}`);
-  });
-});
+// app.get('/ws/chat', { websocket: true }, (connection /*, req*/) => {
+//   connection.socket.on('message', message => {
+//     app.log.info(`Received WS chat message: ${message}`);
+//     connection.socket.send(`Chat echo: ${message}`);
+//   });
+// });
 
 // Global hata yakalama
 app.setErrorHandler((error, req, reply) => {
