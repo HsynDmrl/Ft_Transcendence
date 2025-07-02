@@ -22,7 +22,7 @@ const app = Fastify({
 
 // CORS
 app.register(fastifyCors, {
-  origin: '*',
+  origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
 
