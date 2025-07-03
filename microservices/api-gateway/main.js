@@ -43,7 +43,7 @@ app.get('/health', async () => {
 
 // JWT kontrolü (auth ve health hariç)
 app.addHook('onRequest', async (req, reply) => {
-  if (req.raw.url.startsWith('/auth') || req.raw.url.startsWith('/health') || req.raw.url.startsWith('/ws')) {
+  if (req.raw.url.startsWith('/api/auth') || req.raw.url.startsWith('/health') || req.raw.url.startsWith('/ws')) {
     return;
   }
   try {
@@ -60,7 +60,7 @@ function registerProxy(prefix, upstream) {
   app.register(fastifyHttpProxy, {
     upstream,
     prefix,
-    rewritePrefix: prefix,
+    rewritePrefix: prefix.replace('/api', ''),
     http2: false,
     replyOptions: {
       rewriteRequestHeaders: (originalReq, headers) => {
@@ -72,11 +72,11 @@ function registerProxy(prefix, upstream) {
 }
 
 // Mikroservis proxy'leri
-registerProxy('/auth', 'http://auth-service:3001');
-registerProxy('/users', 'http://user-service:3002');
-registerProxy('/game', 'http://game-service:3003');
-registerProxy('/chat', 'http://chat-service:3004');
-registerProxy('/matchmaking', 'http://matchmaking-service:3005');
+registerProxy('/api/auth', 'http://auth-service:3001');
+registerProxy('/api/users', 'http://user-service:3002');
+registerProxy('/api/game', 'http://game-service:3003');
+registerProxy('/api/chat', 'http://chat-service:3004');
+registerProxy('/api/matchmaking', 'http://matchmaking-service:3005');
 
 // WebSocket endpointleri
 // app.get('/ws/game', { websocket: true }, (connection /*, req*/) => {
