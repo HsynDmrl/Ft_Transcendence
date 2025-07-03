@@ -22,7 +22,8 @@ const app = Fastify({
 
 // CORS
 app.register(fastifyCors, {
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:5173', // Frontend'inizin çalıştığı adres
+  credentials: true, // Cookie ve Authorization header'larının gönderilmesine izin ver
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 });
 
