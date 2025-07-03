@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = Fastify({
   logger: {
-    level: 'info', 
+    level: 'info',
     transport: {
       target: 'pino-pretty'
     }
