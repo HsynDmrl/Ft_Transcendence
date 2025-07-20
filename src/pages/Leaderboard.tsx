@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 interface LeaderboardEntry {
     id: number;

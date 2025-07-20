@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "../context/user/UserContext";
 import GameOverPopup from "../components/game/GameOverPopup";
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 const canvasWidth = 800;
 const canvasHeight = 400;

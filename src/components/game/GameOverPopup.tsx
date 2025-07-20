@@ -1,4 +1,4 @@
-import { useLanguage } from "../../context/language/LanguageProvider";
+import { useLanguage } from "../../context/language/LanguageContext";
 
 function GameOverPopup({ winner, onRestart }: { winner: string; onRestart: () => void }) {
     const { t } = useLanguage();

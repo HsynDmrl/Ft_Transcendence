@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/user/UserContext";
-import { useLanguage } from "../../context/language/LanguageProvider";
+import { useLanguage } from "../../context/language/LanguageContext";
 
 export default function Navbar() {
     const { user, logout } = useUser();
@@ -78,6 +78,13 @@ export default function Navbar() {
                         onClick={() => setMenuOpen(false)}
                     >
                         {t("navbar_friends")}
+                    </Link>
+                    <Link
+                        to="/chat"
+                        className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium md:inline-block"
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        {t("navbar_chat")}
                     </Link>
 
                     {user ? (

@@ -4,7 +4,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useUser } from "../context/user/UserContext";
 import { authService } from "../services/authService";
 import tokenService from "../services/tokenService";
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 export default function Login() {
     const { t } = useLanguage();

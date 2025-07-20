@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { authService } from "../services/authService";
 import type { RegisterRequest } from "../models/AuthModels";
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 const RegisterPage: React.FC = () => {
   const { t } = useLanguage();

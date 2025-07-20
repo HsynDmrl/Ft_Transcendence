@@ -1,31 +1,26 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useUser } from "../context/user/UserContext";
 import { userService } from "../services/userService";
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 export default function ProfilePage() {
     const { t } = useLanguage();
     const { user, updateUser } = useUser();
 
-    // Form state
     const [displayName, setDisplayName] = useState(user?.displayName || "");
     const [firstName, setFirstName] = useState(user?.firstName || "");
     const [lastName, setLastName] = useState(user?.lastName || "");
     const [avatar, setAvatar] = useState(user?.avatar || "");
 
-    // Profil resmi için state
     const [profileImage, setProfileImage] = useState<string | null>(user?.avatar || null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
 
-    // Hata ve başarı mesajları
     const [message, setMessage] = useState<string | null>(null);
 
-    // Profil bilgisini backend'den çekmek için fonksiyon
     async function fetchProfileAndUpdateStates() {
         try {
             const res = await userService.getProfile();
             console.log("fetchProfileAndUpdateStates - backend'den gelen veri:", res);
-            // Eğer res güncel değilse, backend güncellemiyor demektir!
             updateUser(res);
             setDisplayName(res.displayName ?? "");
             setFirstName(res.firstName ?? "");
@@ -33,17 +28,13 @@ export default function ProfilePage() {
             setAvatar(res.avatar ?? "");
             setProfileImage(res.avatar ?? null);
         } catch (err) {
-            // Profil çekilemezse hata gösterilebilir
         }
     }
 
-    // Sayfa açıldığında kullanıcı detayını çek
     useEffect(() => {
         fetchProfileAndUpdateStates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Context'teki user değiştiğinde formu güncelle
     useEffect(() => {
         setDisplayName(user?.displayName ?? "");
         setFirstName(user?.firstName ?? "");
@@ -52,7 +43,6 @@ export default function ProfilePage() {
         setProfileImage(user?.avatar ?? null);
     }, [user]);
 
-    // Profil resmi seçildiğinde preview için
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -62,12 +52,11 @@ export default function ProfilePage() {
             reader.onload = () => {
                 if (reader.result) {
                     setProfileImage(reader.result as string);
-                    setAvatar(reader.result as string); // avatar olarak da kaydet
+                    setAvatar(reader.result as string); 
                 }
             };
             reader.readAsDataURL(file);
 
-            // Dosya input'unu sıfırla (aynı dosya tekrar seçilebilsin)
             e.target.value = "";
         }
     };
@@ -87,7 +76,6 @@ export default function ProfilePage() {
                 updateUser(profileRes);
                 setMessage(t("profile_update_success"));
                 setProfileImageFile(null);
-                // Form state'lerini context değiştiğinde güncelleyen useEffect zaten var!
             } else {
                 setMessage(updateRes.message || t("profile_update_fail"));
             }
@@ -96,7 +84,6 @@ export default function ProfilePage() {
         }
     };
 
-    // Şifre değiştirme işlemi
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
@@ -135,7 +122,6 @@ export default function ProfilePage() {
         setPasswordLoading(false);
     };
 
-    // Ekstra debug için (doğru yerde, fonksiyonun başında):
     useEffect(() => {
         const btn = document.getElementById("profile-update-btn");
         if (btn) {
@@ -156,7 +142,7 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Kullanıcı Bilgileri Kartı */}
                 <div className="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow p-6 flex flex-col items-center">
-                    {user?.avatar ? (
+                    {user?.avatar && user.avatar !== "" ? (
                         <img
                             src={user.avatar}
                             alt={t("register_avatar")}

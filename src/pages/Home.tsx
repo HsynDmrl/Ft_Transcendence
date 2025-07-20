@@ -1,4 +1,4 @@
-import { useLanguage } from "../context/language/LanguageProvider";
+import { useLanguage } from "../context/language/LanguageContext";
 
 export default function Home() {
     const { t } = useLanguage();

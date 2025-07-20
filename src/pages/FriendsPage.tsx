@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLanguage } from "../context/language/LanguageProvider";
 import { friendsService } from "../services/friendsService";
 import { useUser } from "../context/user/UserContext";
+import { useLanguage } from "../context/language/LanguageContext";
 
 interface Friend {
     id: number;
@@ -10,26 +10,38 @@ interface Friend {
     email: string;
 }
 
+function getLocale(lang: string) {
+    if (lang === "tr") return "tr-TR";
+    if (lang === "de") return "de-DE";
+    return "en-US";
+}
+
+function localizeAMPM(dateStr: string, lang: string) {
+    if (lang === "tr") {
+        return dateStr.replace("AM", "ÖÖ").replace("PM", "ÖS");
+    }
+    if (lang === "de") {
+        return dateStr.replace("AM", "vorm.").replace("PM", "nachm.");
+    }
+    return dateStr;
+}
+
 export default function FriendsPage() {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const { user } = useUser();
     const [friends, setFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Arkadaş daveti input ve mesaj state
     const [inviteName, setInviteName] = useState("");
     const [inviteMessage, setInviteMessage] = useState<string | null>(null);
     const [inviteLoading, setInviteLoading] = useState(false);
 
-    // Davetler
     const [requests, setRequests] = useState<any[]>([]);
     const [requestsLoading, setRequestsLoading] = useState(true);
     const [requestsError, setRequestsError] = useState<string | null>(null);
 
-    // Davet kabul etme işlemi
     const [acceptLoading, setAcceptLoading] = useState<number | null>(null);
-    // Davet reddetme işlemi
     const [declineLoading, setDeclineLoading] = useState<number | null>(null);
 
     useEffect(() => {
@@ -90,13 +102,11 @@ export default function FriendsPage() {
         setAcceptLoading(requestId);
         try {
             await friendsService.acceptFriendRequest(requestId);
-            // Davetler ve arkadaşlar listesini güncelle
             const updatedRequests = await friendsService.getFriendRequests();
             setRequests(updatedRequests);
             const updatedFriends = await friendsService.getFriends();
             setFriends(updatedFriends);
         } catch (err) {
-            // Hata yönetimi eklenebilir
         }
         setAcceptLoading(null);
     };
@@ -105,20 +115,16 @@ export default function FriendsPage() {
         setDeclineLoading(requestId);
         try {
             await friendsService.declineFriendRequest(requestId);
-            // Davetler listesini güncelle
             const updatedRequests = await friendsService.getFriendRequests();
             setRequests(updatedRequests);
         } catch (err) {
-            // Hata yönetimi eklenebilir
         }
         setDeclineLoading(null);
     };
 
-    // Davetler bölümü için gelen ve gönderilen istekleri ayır
     const sentRequests = requests.filter(req => req.from.id === user?.id);
     const receivedRequests = requests.filter(req => req.to.id === user?.id);
 
-    // Durum etiket rengi
     const getStatusColor = (status: string) => {
         if (status === "pending") return "bg-yellow-100 text-yellow-800 border-yellow-300";
         if (status === "accepted") return "bg-green-100 text-green-800 border-green-300";
@@ -214,14 +220,29 @@ export default function FriendsPage() {
                                         key={req.id}
                                         className="py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-1"
                                     >
-                                        <div>
+                                        <div className="flex items-center gap-3">
+                                            {/* Avatar for 'to' user */}
+                                            {req.to.avatar && req.to.avatar !== "" ? (
+                                                <img
+                                                    src={req.to.avatar}
+                                                    alt={req.to.displayName}
+                                                    className="w-8 h-8 rounded-full object-cover border border-blue-200"
+                                                />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-base font-bold">
+                                                    {req.to.displayName[0]}
+                                                </div>
+                                            )}
                                             <span>
                                                 <strong>{t("friend_request_to")}</strong> {req.to.displayName}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 md:gap-4 mt-1 md:mt-0">
                                             <span className="text-xs text-gray-400">
-                                                {new Date(req.createdAt).toLocaleString()}
+                                                {localizeAMPM(
+                                                    new Date(req.createdAt).toLocaleString(getLocale(lang), { hour12: true }),
+                                                    lang
+                                                )}
                                             </span>
                                             <span className={`inline-block px-2 py-1 rounded border text-sm font-semibold ${getStatusColor(req.status)}`}>
                                                 {t(`friend_request_status_${req.status}`)}
@@ -243,7 +264,19 @@ export default function FriendsPage() {
                                     <li key={req.id} className="py-3">
                                         {/* First row: Kimden & Status */}
                                         <div className="flex items-center justify-between">
-                                            <span>
+                                            <span className="flex items-center gap-3">
+                                                {/* Avatar for 'from' user */}
+                                                {req.from.avatar && req.from.avatar !== "" ? (
+                                                    <img
+                                                        src={req.from.avatar}
+                                                        alt={req.from.displayName}
+                                                        className="w-8 h-8 rounded-full object-cover border border-green-200"
+                                                    />
+                                                ) : (
+                                                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-base font-bold">
+                                                        {req.from.displayName[0]}
+                                                    </div>
+                                                )}
                                                 <strong>{t("friend_request_from")}</strong> {req.from.displayName}
                                             </span>
                                             <span className={`inline-block px-2 py-1 rounded border text-sm font-semibold ${getStatusColor(req.status)}`}>
@@ -253,7 +286,10 @@ export default function FriendsPage() {
                                         {/* Second row: Date & Buttons */}
                                         <div className="flex items-center justify-between mt-2">
                                             <span className="text-xs text-gray-400">
-                                                {new Date(req.createdAt).toLocaleString()}
+                                                {localizeAMPM(
+                                                    new Date(req.createdAt).toLocaleString(getLocale(lang), { hour12: true }),
+                                                    lang
+                                                )}
                                             </span>
                                             {req.status === "pending" ? (
                                                 <div className="flex gap-2">

@@ -8,6 +8,7 @@ import Leaderboard from "../pages/Leaderboard";
 import RequireAuth from "../components/auth/RequireAuth";
 import RegisterPage from "../pages/RegisterPage";
 import FriendsPage from "../pages/FriendsPage";
+import ChatPage from "../pages/ChatPage";
 
 export default function AppRouter() {
     return (
@@ -45,10 +46,17 @@ export default function AppRouter() {
                         </RequireAuth>
                     }
                 />
+                <Route
+                    path="/chat"
+                    element={
+                        <RequireAuth>
+                            <ChatPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<RegisterPage />} />
             </Routes>
-
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterPage />} />
         </Layout>
     );
 }
